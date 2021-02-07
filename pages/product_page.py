@@ -27,3 +27,11 @@ class ProductPage(BasePage):
         expected_string = "Basket total: " + product_value + "\nView basket"
         assert expected_string == basket_value, \
             f"Expected basket value got '{expected_string}' but got '{basket_value}' "
+
+    def should_not_be_success_message(self):
+        assert self.is_not_element_present(*ProductPageLocators.ALERT_SUCCESS), \
+            "Success message is presented, but should not be"
+
+    def should_success_message_disappeared(self):
+        assert self.is_disappeared(*ProductPageLocators.ALERT_SUCCESS), \
+            "Success message should be disappeared, but still present"
