@@ -2,7 +2,9 @@ import time
 
 import pytest
 from .pages.product_page import ProductPage
+from .pages.main_page import MainPage
 from .pages.login_page import LoginPage
+from .pages.basket_page import BasketPage
 from .pages.base_page import BasePage
 
 
@@ -17,9 +19,8 @@ from .pages.base_page import BasePage
                                                "/?promo=offer7", marks=pytest.mark.xfail),
                                   "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/?promo=offer8",
                                   "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/?promo=offer9"])
+@pytest.mark.need_review
 def test_guest_can_add_product_to_basket(browser, link):
-    # link = "http://selenium1py.pythonanywhere.com/catalogue/the-shellcoders-handbook_209/?promo=newYear"
-    # link = "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/?promo=newYear2019"
     page = ProductPage(browser, link)          # инициализируем Page Object, передаем в конструктор экземпляр драйвера и
     # url адрес
     page.open()                                # открываем страницу
@@ -70,6 +71,7 @@ def test_guest_should_see_login_link_on_product_page(browser):
     page.should_be_login_link()
 
 
+@pytest.mark.need_review
 def test_guest_can_go_to_login_page_from_product_page(browser):
     link = "http://selenium1py.pythonanywhere.com/catalogue/the-city-and-the-stars_95/"
     page = ProductPage(browser, link)
@@ -96,6 +98,7 @@ class TestUserAddToBasketFromProductPage():
         page.open()  # открываем страницу
         page.should_not_be_success_message()  # проверяем что нет сообщения о добавлении товара в корзину
 
+    @pytest.mark.need_review
     def test_user_can_add_product_to_basket(self, browser):
         link = "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/"
         page = ProductPage(browser, link)          # инициализируем Page Object, передаем в конструктор экземпляр
@@ -108,3 +111,14 @@ class TestUserAddToBasketFromProductPage():
         page.should_be_product_in_basket_message(product_name)     # проверяем что присутствует сообщение о том что
         # нужный товар добавлен в корзину
         page.should_be_basket_value(product_value)      # проверяем стоимость товаров в корзине
+
+    @pytest.mark.need_review
+    def test_guest_cant_see_product_in_basket_opened_from_product_page(self, browser):
+        link = "http://selenium1py.pythonanywhere.com/catalogue/the-city-and-the-stars_95/"
+        page = MainPage(browser, link)  # инициализируем Page Object, передаем в конструктор экземпляр драйвера и url
+        # адрес
+        page.open()                     # открываем страницу
+        page.go_to_basket()             # переходим по кнопке в корзину
+        basket_page = BasketPage(browser, browser.current_url)
+        basket_page.should_not_be_products_in_basket()  # Ожидаем, что в корзине нет товаров
+        basket_page.should_basket_empty_text_present()  # Ожидаем, что есть текст о том что корзина пуста
